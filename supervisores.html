@@ -3,7 +3,7 @@
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
         function filledCell(cell) {
-        return cell !== '' && cell != null;
+            return cell !== '' && cell != null;
         }
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
@@ -19,7 +19,7 @@
 
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
-                row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
                 // Fallback
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
@@ -37,13 +37,45 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supervisores - Escuela Cristiana de Sordos Isaías 29:18</title>
-    <link rel="stylesheet" href="CSS/2styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -51,7 +83,7 @@
         <div class="password-overlay__box">
             <h2 class="password-overlay__title">Acceso Restringido</h2>
             <p class="password-overlay__text">Ingresa la contraseña para acceder a Supervisores:</p>
-            <input type="password" id="password-input" class="password-overlay__input" placeholder="Contraseña">
+            <input type="password" id="password-input" class="password-overlay__input" placeholder="Contraseña" data-page="supervisores">
             <button onclick="checkPassword('supervisores')" class="password-overlay__button">Ingresar</button>
             <p id="error-message" class="password-overlay__error" style="display: none;">Contraseña incorrecta. Intenta de nuevo.</p>
         </div>
@@ -61,11 +93,19 @@
         <header class="header">
             <nav class="header__nav">
                 <div class="header__logo">
-                    <img src="images/logo.png" alt="Logo Escuela Isaías 29:18" class="header__logo-img">
+                    <img src="./images/logo.png" alt="Logo Escuela Isaías 29:18" class="header__logo-img">
                 </div>
                 <div class="header__menu-toggle">☰</div>
                 <ul class="header__nav-links">
-                    <li><a href="index.html" class="header__nav-link">Inicio</a></li>
+                    <li class="header__nav-item">
+                        <a href="index.html" class="header__nav-link">Inicio</a>
+                        <ul class="header__nav-sublinks">
+                            <li><a href="quienes-somos.html" class="header__nav-sublink">Quiénes Somos</a></li>
+                            <li><a href="servicios.html" class="header__nav-sublink">Nuestros Servicios</a></li>
+                            <li><a href="historia.html" class="header__nav-sublink">Breve Historia</a></li>
+                            <li><a href="staff.html" class="header__nav-sublink">Nuestro Staff</a></li>
+                        </ul>
+                    </li>
                     <li><a href="secretaria.html" class="header__nav-link">Secretaría</a></li>
                     <li><a href="docentes.html" class="header__nav-link">Docentes</a></li>
                     <li><a href="supervisores.html" class="header__nav-link header__nav-link--active">Supervisores</a></li>
@@ -81,53 +121,17 @@
             <section class="hero">
                 <div class="hero__content">
                     <h1 class="hero__title">Supervisores</h1>
-                    <p class="hero__motto">Revisión de Calificaciones</p>
+                    <p class="hero__motto">Revisión de Calificaciones y Asistencias</p>
                 </div>
             </section>
             <section class="content">
-                <h2 class="content__title">Filtros de Calificaciones</h2>
-                <form class="form">
-                    <div class="form__group">
-                        <label for="estudiante-filtro" class="form__group-label">Estudiante:</label>
-                        <select id="estudiante-filtro" name="estudiante-filtro" class="form__group-select">
-                            <option value="">Todos</option>
-                            <option value="Juan Pérez">Juan Pérez</option>
-                            <option value="María López">María López</option>
-                            <option value="Carlos Gómez">Carlos Gómez</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="anio-filtro" class="form__group-label">Año Escolar:</label>
-                        <select id="anio-filtro" name="anio-filtro" class="form__group-select">
-                            <option value="">Todos</option>
-                            <option value="2023">2023</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="asignatura-filtro" class="form__group-label">Asignatura:</label>
-                        <select id="asignatura-filtro" name="asignatura-filtro" class="form__group-select">
-                            <option value="">Todas</option>
-                            <option value="Matemáticas">Matemáticas</option>
-                            <option value="Lenguaje">Lenguaje</option>
-                            <option value="Ciencias">Ciencias</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="grado-filtro" class="form__group-label">Grado:</label>
-                        <select id="grado-filtro" name="grado-filtro" class="form__group-select">
-                            <option value="">Todos</option>
-                            <option value="Primero">Primero</option>
-                            <option value="Segundo">Segundo</option>
-                            <option value="Tercero">Tercero</option>
-                        </select>
-                    </div>
-                    <button type="button" class="form__submit-btn" onclick="filterCalifications()">Filtrar</button>
-                </form>
-
+                <!-- Calificaciones -->
                 <h2 class="content__title">Calificaciones</h2>
-                <table class="table" id="califications-table">
+                <div class="form__group">
+                    <label for="search-grade" class="form__group-label">Buscar Calificación:</label>
+                    <input type="text" id="search-grade" class="form__group-input" placeholder="Nombre del estudiante o asignatura">
+                </div>
+                <table id="califications-table" class="table">
                     <thead>
                         <tr>
                             <th class="table__th">Estudiante</th>
@@ -138,48 +142,35 @@
                             <th class="table__th">Observación</th>
                         </tr>
                     </thead>
-                    <tbody class="table__tbody">
-                        <tr>
-                            <td class="table__td">Juan Pérez</td>
-                            <td class="table__td">Matemáticas</td>
-                            <td class="table__td">Primero</td>
-                            <td class="table__td">2024</td>
-                            <td class="table__td">90</td>
-                            <td class="table__td">Excelente</td>
-                        </tr>
-                        <tr>
-                            <td class="table__td">María López</td>
-                            <td class="table__td">Lenguaje</td>
-                            <td class="table__td">Segundo</td>
-                            <td class="table__td">2024</td>
-                            <td class="table__td">85</td>
-                            <td class="table__td">Muy bien</td>
-                        </tr>
-                        <tr>
-                            <td class="table__td">Carlos Gómez</td>
-                            <td class="table__td">Ciencias</td>
-                            <td class="table__td">Tercero</td>
-                            <td class="table__td">2023</td>
-                            <td class="table__td">70</td>
-                            <td class="table__td">Debe mejorar</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
-
                 <h2 class="content__title">Resumen de Promedios</h2>
-                <div class="summary">
-                    <p><strong>Promedio General:</strong> 81.67</p>
-                    <p><strong>Número de Estudiantes:</strong> 3</p>
-                    <p><strong>Calificación Más Alta:</strong> 90 (Juan Pérez - Matemáticas)</p>
-                    <p><strong>Calificación Más Baja:</strong> 70 (Carlos Gómez - Ciencias)</p>
+                <div class="summary" id="summary-section"></div>
+
+                <!-- Asistencias -->
+                <h2 class="content__title">Asistencias</h2>
+                <div class="form__group">
+                    <label for="search-attendance" class="form__group-label">Buscar Asistencia:</label>
+                    <input type="text" id="search-attendance" class="form__group-input" placeholder="Nombre del estudiante">
                 </div>
+                <table id="attendance-table" class="table">
+                    <thead>
+                        <tr>
+                            <th class="table__th">Estudiante</th>
+                            <th class="table__th">Año Escolar</th>
+                            <th class="table__th">Fecha</th>
+                            <th class="table__th">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </section>
         </main>
         <footer class="footer">
-            <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18. Hecho con amor e inclusión.</p>
+            <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18.</p>
         </footer>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="JavaScript/main.js"></script>
+    <script src="./jsECS/main.js"></script>
 </body>
 </html>

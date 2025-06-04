@@ -37,7 +37,39 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -51,7 +83,7 @@
         <div class="password-overlay__box">
             <h2 class="password-overlay__title">Acceso Restringido</h2>
             <p class="password-overlay__text">Ingresa la contraseña para acceder a Docentes:</p>
-            <input type="password" id="password-input" class="password-overlay__input" placeholder="Contraseña">
+            <input type="password" id="password-input" class="password-overlay__input" placeholder="Contraseña" data-page="docentes">
             <button onclick="checkPassword('docentes')" class="password-overlay__button">Ingresar</button>
             <p id="error-message" class="password-overlay__error" style="display: none;">Contraseña incorrecta. Intenta de nuevo.</p>
         </div>
@@ -89,52 +121,56 @@
             <section class="hero">
                 <div class="hero__content">
                     <h1 class="hero__title">Docentes</h1>
-                    <p class="hero__motto">Gestión de Calificaciones</p>
+                    <p class="hero__motto">Gestión de Calificaciones y Revisión de Asistencias</p>
                 </div>
             </section>
             <section class="content">
-                <h2 class="content__title">Cargar Calificación</h2>
-                <form class="form">
-                    <div class="form__group">
-                        <label for="estudiante-calificacion" class="form__group-label">Estudiante:</label>
-                        <select id="estudiante-calificacion" name="estudiante-calificacion" class="form__group-select">
-                            <option value="">Seleccionar Estudiante</option>
-                            <option value="1">Juan Pérez</option>
-                            <option value="2">María López</option>
-                            <option value="3">Carlos Gómez</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="asignatura-calificacion" class="form__group-label">Asignatura:</label>
-                        <select id="asignatura-calificacion" name="asignatura-calificacion" class="form__group-select">
-                            <option value="">Seleccionar Asignatura</option>
-                            <option value="Matemáticas">Matemáticas</option>
-                            <option value="Lenguaje">Lenguaje</option>
-                            <option value="Ciencias">Ciencias</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="anio-calificacion" class="form__group-label">Año Escolar:</label>
-                        <select id="anio-calificacion" name="anio-calificacion" class="form__group-select">
-                            <option value="">Seleccionar Año</option>
-                            <option value="2023">2023</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                        </select>
-                    </div>
-                    <div class="form__group">
-                        <label for="calificacion" class="form__group-label">Calificación (0-100):</label>
-                        <input type="number" id="calificacion" name="calificacion" class="form__group-input" min="0" max="100" placeholder="Ej. 85">
-                    </div>
-                    <div class="form__group">
-                        <label for="observacion" class="form__group-label">Observación:</label>
-                        <textarea id="observacion" name="observacion" class="form__group-textarea" placeholder="Ej. Excelente progreso" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="form__submit-btn">Guardar Calificación</button>
-                </form>
+                <h2 class="content__title">Gestionar Calificaciones</h2>
+                <div class="form">
+                    <h3 class="form__title">Registrar/Editar Calificación</h3>
+                    <form id="grades-form">
+                        <div class="form__group">
+                            <label for="id-estudiante" class="form__group-label">Estudiante:</label>
+                            <select id="id-estudiante" name="id-estudiante" class="form__group-select" required>
+                                <option value="">Seleccionar Estudiante</option>
+                            </select>
+                        </div>
+                        <div class="form__group">
+                            <label for="id-asignatura" class="form__group-label">Asignatura:</label>
+                            <select id="id-asignatura" name="id-asignatura" class="form__group-select" required>
+                                <option value="">Seleccionar Asignatura</option>
+                            </select>
+                        </div>
+                        <div class="form__group">
+                            <label for="id-anio-escolar" class="form__group-label">Año Escolar:</label>
+                            <select id="id-anio-escolar" name="id-anio-escolar" class="form__group-select" required>
+                                <option value="">Seleccionar Año</option>
+                            </select>
+                        </div>
+                        <div class="form__group">
+                            <label for="calificacion" class="form__group-label">Calificación (0-100):</label>
+                            <input type="number" id="calificacion" name="calificacion" class="form__group-input" min="0" max="100" step="0.01" required>
+                        </div>
+                        <div class="form__group">
+                            <label for="observacion" class="form__group-label">Observación:</label>
+                            <textarea id="observacion" name="observacion" class="form__group-textarea" maxlength="100" placeholder="Ej. Excelente progreso" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="form__submit-btn">Guardar Calificación</button>
+                    </form>
+                </div>
 
-                <h2 class="content__title">Vista Previa de Calificaciones</h2>
-                <table class="table">
+                <h2 class="content__title">Vista de Calificaciones y Asistencias</h2>
+                <div class="form__group">
+                    <label for="filter-student" class="form__group-label">Filtrar por Estudiante:</label>
+                    <select id="filter-student" class="form__group-select">
+                        <option value="">Todos los estudiantes</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label for="search-grade" class="form__group-label">Buscar Calificación:</label>
+                    <input type="text" id="search-grade" class="form__group-input" placeholder="Nombre del estudiante o asignatura">
+                </div>
+                <table id="grades-table" class="table">
                     <thead>
                         <tr>
                             <th class="table__th">Estudiante</th>
@@ -142,39 +178,35 @@
                             <th class="table__th">Año</th>
                             <th class="table__th">Calificación</th>
                             <th class="table__th">Observación</th>
+                            <th class="table__th">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="table__tbody">
+                    <tbody></tbody>
+                </table>
+
+                <h2 class="content__title">Asistencias</h2>
+                <div class="form__group">
+                    <label for="search-attendance" class="form__group-label">Buscar Asistencia:</label>
+                    <input type="text" id="search-attendance" class="form__group-input" placeholder="Nombre del estudiante">
+                </div>
+                <table id="attendance-table" class="table">
+                    <thead>
                         <tr>
-                            <td class="table__td">Juan Pérez</td>
-                            <td class="table__td">Matemáticas</td>
-                            <td class="table__td">2024</td>
-                            <td class="table__td">90</td>
-                            <td class="table__td">Excelente</td>
+                            <th class="table__th">Estudiante</th>
+                            <th class="table__th">Año Escolar</th>
+                            <th class="table__th">Fecha</th>
+                            <th class="table__th">Estado</th>
                         </tr>
-                        <tr>
-                            <td class="table__td">María López</td>
-                            <td class="table__td">Lenguaje</td>
-                            <td class="table__td">2024</td>
-                            <td class="table__td">85</td>
-                            <td class="table__td">Muy bien</td>
-                        </tr>
-                        <tr>
-                            <td class="table__td">Carlos Gómez</td>
-                            <td class="table__td">Ciencias</td>
-                            <td class="table__td">2023</td>
-                            <td class="table__td">70</td>
-                            <td class="table__td">Debe mejorar</td>
-                        </tr>
-                    </tbody>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </section>
         </main>
         <footer class="footer">
-            <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18. Hecho con amor e inclusión.</p>
+            <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18.</p>
         </footer>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="JavaScript/main.js"></script>
+    <script src="./jsECS/main.js"></script>
 </body>
 </html>

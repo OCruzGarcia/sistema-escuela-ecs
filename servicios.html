@@ -3,7 +3,7 @@
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
         function filledCell(cell) {
-        return cell !== '' && cell != null;
+            return cell !== '' && cell != null;
         }
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
@@ -19,11 +19,11 @@
 
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
-                row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
                 // Fallback
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
-                headerRowIndex = 0;
+                    headerRowIndex = 0;
                 }
 
                 // Convert filtered JSON back to CSV
@@ -43,14 +43,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestros Servicios - Escuela Cristiana de Sordos Isaías 29:18</title>
-    <link rel="stylesheet" href="css/2styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
         <nav class="header__nav">
             <div class="header__logo">
-                <img src="images/logo.png" alt="Logo Escuela Isaías 29:18" class="header__logo-img">
+                <img src="./images/logo.png" alt="Logo Escuela Isaías 29:18" class="header__logo-img">
             </div>
             <div class="header__menu-toggle">☰</div>
             <ul class="header__nav-links">
@@ -86,20 +86,7 @@
             <ul class="content__list">
                 <li class="content__list-item"><strong>Pintura:</strong> Clases de arte para fomentar la creatividad y la expresión personal.</li>
                 <li class="content__list-item"><strong>Danza:</strong> Talleres de danza adaptados para promover la coordinación y el trabajo en equipo.</li>
-                <li class="content__list-item"><strong>Consejería Cristiana:</strong> Apoyo espiritual basado en valores cristianos.</lirobot: none;
-                </style>
-                <style>
-                    .content__list {
-                        list-style: none;
-                        padding: 0;
-                        margin-bottom: 1.5rem;
-                    }
-                    .content__list-item {
-                        font-size: 1.1rem;
-                        margin-bottom: 0.8rem;
-                        color: #333;
-                    }
-                </style>
+                <li class="content__list-item"><strong>Consejería Cristiana:</strong> Apoyo espiritual basado en valores cristianos.</li>
                 <li class="content__list-item"><strong>Informática:</strong> Capacitación en habilidades digitales para la era moderna.</li>
                 <li class="content__list-item"><strong>Educación Cristiana:</strong> Formación en principios bíblicos para un crecimiento espiritual.</li>
                 <li class="content__list-item"><strong>Pensum Académico:</strong> Currículo educativo inclusivo diseñado para estudiantes sordos.</li>
@@ -109,6 +96,6 @@
     <footer class="footer">
         <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18. Hecho con amor e inclusión.</p>
     </footer>
-    <script src="JavaScript/main.js"></script>
+    <script src="./jsECS/main.js"></script>
 </body>
 </html>

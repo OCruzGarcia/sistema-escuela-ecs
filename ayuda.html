@@ -3,7 +3,7 @@
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
         function filledCell(cell) {
-        return cell !== '' && cell != null;
+            return cell !== '' && cell != null;
         }
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
@@ -19,11 +19,11 @@
 
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
-                row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
                 // Fallback
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
-                headerRowIndex = 0;
+                    headerRowIndex = 0;
                 }
 
                 // Convert filtered JSON back to CSV
@@ -43,7 +43,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayuda - Escuela Cristiana de Sordos Isaías 29:18</title>
-    <link rel="stylesheet" href="CSS/2styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -54,13 +54,21 @@
             </div>
             <div class="header__menu-toggle">☰</div>
             <ul class="header__nav-links">
-                <li><a href="index.html" class="header__nav-link">Inicio</a></li>
+                <li class="header__nav-item">
+                    <a href="index.html" class="header__nav-link">Inicio</a>
+                    <ul class="header__nav-sublinks">
+                        <li><a href="quienes-somos.html" class="header__nav-sublink">Quiénes Somos</a></li>
+                        <li><a href="servicios.html" class="header__nav-sublink">Nuestros Servicios</a></li>
+                        <li><a href="historia.html" class="header__nav-sublink">Breve Historia</a></li>
+                        <li><a href="staff.html" class="header__nav-sublink">Nuestro Staff</a></li>
+                    </ul>
+                </li>
                 <li><a href="secretaria.html" class="header__nav-link">Secretaría</a></li>
                 <li><a href="docentes.html" class="header__nav-link">Docentes</a></li>
                 <li><a href="supervisores.html" class="header__nav-link">Supervisores</a></li>
                 <li><a href="direccion.html" class="header__nav-link">Dirección</a></li>
                 <li><a href="informes.html" class="header__nav-link">Informes</a></li>
-                <li><a href="galeria.html" class="header__nav-link">Galería</a></li>
+                <li><a href="galeria_2.html" class="header__nav-link">Galería</a></li>
                 <li><a href="ayuda.html" class="header__nav-link header__nav-link--active">Ayuda</a></li>
                 <li><a href="dashboard.html" class="header__nav-link">Panel de Control</a></li>
             </ul>
@@ -118,7 +126,6 @@
     <footer class="footer">
         <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18. Hecho con amor e inclusión.</p>
     </footer>
-
-    <script src="JavaScript/main.js"></script>
+    <script src="jsECS/main.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
         function filledCell(cell) {
-        return cell !== '' && cell != null;
+            return cell !== '' && cell != null;
         }
         function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
@@ -19,11 +19,11 @@
 
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
-                row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
                 // Fallback
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
-                headerRowIndex = 0;
+                    headerRowIndex = 0;
                 }
 
                 // Convert filtered JSON back to CSV
@@ -43,7 +43,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galería - Escuela Cristiana de Sordos Isaías 29:18</title>
-    <link rel="stylesheet" href="CSS/2styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -54,7 +54,15 @@
             </div>
             <div class="header__menu-toggle">☰</div>
             <ul class="header__nav-links">
-                <li><a href="index.html" class="header__nav-link">Inicio</a></li>
+                <li class="header__nav-item">
+                    <a href="index.html" class="header__nav-link">Inicio</a>
+                    <ul class="header__nav-sublinks">
+                        <li><a href="quienes-somos.html" class="header__nav-sublink">Quiénes Somos</a></li>
+                        <li><a href="servicios.html" class="header__nav-sublink">Nuestros Servicios</a></li>
+                        <li><a href="historia.html" class="header__nav-sublink">Breve Historia</a></li>
+                        <li><a href="staff.html" class="header__nav-sublink">Nuestro Staff</a></li>
+                    </ul>
+                </li>
                 <li><a href="secretaria.html" class="header__nav-link">Secretaría</a></li>
                 <li><a href="docentes.html" class="header__nav-link">Docentes</a></li>
                 <li><a href="supervisores.html" class="header__nav-link">Supervisores</a></li>
@@ -81,48 +89,49 @@
                     <select id="categoria-filtro" name="categoria-filtro" class="form__group-select" onchange="filterGallery()">
                         <option value="">Todas</option>
                         <option value="actividades">Actividades</option>
-                        <option value="teatro">Teatros</option>
-                        <option value="curso">Cursos</option>
+                        <option value="teatros">Teatros</option>
+                        <option value="cursos">Cursos</option>
                     </select>
                 </div>
+                <!-- Comentario: Opcional, enviar a /api/galeria con Flask para obtener imágenes desde Azure SQL -->
             </form>
 
             <div class="gallery">
                 <div class="gallery__item" data-category="actividades">
                     <img src="images/galeria/reunion1.jpg" alt="Arte de material" class="gallery__item-img">
-                        <p class="gallery__text">Arte de material</p>
+                    <p class="gallery__item-text">Arte de material</p>
                 </div>
-                <div class="gallery__item" data-category="teatro">
+                <div class="gallery__item" data-category="teatros">
                     <img src="images/galeria/reunion2.jpg" alt="Participación Drama" class="gallery__item-img">
-                    <p class="gallery__text">Participación Drama</p>
+                    <p class="gallery__item-text">Participación Drama</p>
                 </div>
                 <div class="gallery__item" data-category="actividades">
                     <img src="images/galeria/reunion3.jpg" alt="Aprendizajes Lenguajes de Seña" class="gallery__item-img">
-                    <p class="gallery__text">Aprendizajes Lenguajes de Seña</p>
+                    <p class="gallery__item-text">Aprendizajes Lenguajes de Seña</p>
                 </div>
-                <div class="gallery__item" data-category="curso">
-                    <img src="images/galeria/capacitacion1.jpg" alt="Estudiantes Cursos" class="gallery__item-img">
-                    <p class="gallery__text">Estudiante Cursos</p>
+                <div class="gallery__item" data-category="cursos">
+                    <img src="images/galeria/capacitacion1.jpg" alt="Estudiante Cursos" class="gallery__item-img">
+                    <p class="gallery__item-text">Estudiante Cursos</p>
                 </div>
-                <div class="gallery__item" data-category="curso">
+                <div class="gallery__item" data-category="cursos">
                     <img src="images/galeria/capacitacion2.jpg" alt="Estudiantes las ferías" class="gallery__item-img">
-                    <p class="gallery__text">Estudiantes las ferías</p>
+                    <p class="gallery__item-text">Estudiantes las ferías</p>
                 </div>
-                <div class="gallery__item" data-category="curso">
+                <div class="gallery__item" data-category="cursos">
                     <img src="images/galeria/capacitacion3.jpg" alt="Estudiantes Presentaciones" class="gallery__item-img">
-                    <p class="gallery__text">Estudiantes Presentaciones</p>
+                    <p class="gallery__item-text">Estudiantes Presentaciones</p>
                 </div>
-                <div class="gallery__item" data-category="curso">
+                <div class="gallery__item" data-category="cursos">
                     <img src="images/galeria/actividad1.jpg" alt="Estudiantes ayudan las plantas" class="gallery__item-img">
-                    <p class="gallery__text">Estudiantes ayudan las plantas</p>
+                    <p class="gallery__item-text">Estudiantes ayudan las plantas</p>
                 </div>
-                <div class="gallery__item" data-category="teatro">
+                <div class="gallery__item" data-category="teatros">
                     <img src="images/galeria/actividad2.jpg" alt="Participación Danza" class="gallery__item-img">
-                    <p class="gallery__text">Participación Danza</p>
+                    <p class="gallery__item-text">Participación Danza</p>
                 </div>
                 <div class="gallery__item" data-category="actividades">
                     <img src="images/galeria/actividad3.jpg" alt="Los niños dinamica" class="gallery__item-img">
-                    <p class="gallery__text">Los niños dinamica</p>
+                    <p class="gallery__item-text">Los niños dinamica</p>
                 </div>
             </div>
         </section>
@@ -130,7 +139,6 @@
     <footer class="footer">
         <p class="footer__text">© 2025 Escuela Cristiana de Sordos Isaías 29:18. Hecho con amor e inclusión.</p>
     </footer>
-    
-    <script src="JavaScript/main.js"></script>
+    <script src="jsECS/main.js"></script>
 </body>
 </html>
