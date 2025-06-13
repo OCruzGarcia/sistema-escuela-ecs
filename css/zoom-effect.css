@@ -1,0 +1,11 @@
+/* Efecto de zoom para los recuadros de estadísticas */
+.dashboard__stat-card {
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard__stat-card:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
