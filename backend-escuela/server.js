@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const { poolPromise } = require('./config/db');
 const estudianteRoutes = require('./routes/estudiantes');
+const asistenciaRoutes = require('./routes/asistencias');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/estudiantes', estudianteRoutes);
+app.use('/api/asistencias', asistenciaRoutes);
 
 app.get('/api/test', async (req, res) => {
   try {
