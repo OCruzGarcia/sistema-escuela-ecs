@@ -1,0 +1,50 @@
+name: Subir Backend Escuela a Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sacar código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar cosas necesarias
+        run: |
+          cd backend-escuela
+          npm ci
+
+      - name: Construir el backend
+        run: |
+          cd backend-escuela
+          npm run build --if-present
+
+      - name: Conectar a Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Subir a Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: sistema-escuela-ecs-backend
+          package: ./backend-escuela
+
+      - name: Reiniciar Azure
+        run: |
+          az webapp restart --name sistema-escuela-ecs-backend --resource-group sistema-escuela-ecs-rg
